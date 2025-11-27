@@ -28,11 +28,11 @@ class User {
 
   static async create(user) {
     try {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
       const connection = await pool.getConnection();
+      // This is where you would hash the password
       const [result] = await connection.query(
         'INSERT INTO users (email, password, role) VALUES (?, ?, ?)',
-        [user.email, hashedPassword, user.role || 'user']
+        [user.email, user.password, user.role]
       );
       connection.release();
       return result;
@@ -42,10 +42,9 @@ class User {
     }
   }
 
-  static async verifyPassword(plainPassword, hashedPassword) {
-    try {
-      return await bcrypt.compare(plainPassword, hashedPassword);
-    } catch (error) {
+  static async verifyPassword(plainPassword, userPassword) {
+    try { return await bcrypt.compare(plainPassword, userPassword); }
+    catch (error) {
       console.error('Error verifying password:', error);
       throw error;
     }

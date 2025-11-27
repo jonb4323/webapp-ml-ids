@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false } // Set to true in production with HTTPS
@@ -30,7 +30,7 @@ app.use('/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 
 // Serve views
-app.get('/', (req, res) => {
+app.get('/', (req, res) => { 
   res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 

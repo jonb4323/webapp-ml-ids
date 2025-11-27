@@ -14,10 +14,7 @@ exports.getEmployeeById = async (req, res) => {
   try {
     const { id } = req.params;
     const employee = await Employee.findById(id);
-    
-    if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
-    }
+    if (!employee) { return res.status(404).json({ message: 'Employee not found' }); }
     
     res.json(employee);
   } catch (error) {
@@ -29,10 +26,7 @@ exports.getEmployeeById = async (req, res) => {
 exports.createEmployee = async (req, res) => {
   try {
     const { name, email, position, department } = req.body;
-
-    if (!name || !email || !position || !department) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
+    if (!name || !email || !position || !department) { return res.status(400).json({ message: 'All fields are required' }); }
 
     const result = await Employee.create({ name, email, position, department });
     res.status(201).json({ message: 'Employee created successfully', employeeId: result.insertId });
@@ -46,15 +40,10 @@ exports.updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, position, department } = req.body;
-
-    if (!name || !email || !position || !department) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
+    if (!name || !email || !position || !department) { return res.status(400).json({ message: 'All fields are required' }); }
 
     const employee = await Employee.findById(id);
-    if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
-    }
+    if (!employee) { return res.status(404).json({ message: 'Employee not found' }); }
 
     await Employee.update(id, { name, email, position, department });
     res.json({ message: 'Employee updated successfully' });
@@ -69,9 +58,7 @@ exports.deleteEmployee = async (req, res) => {
     const { id } = req.params;
     
     const employee = await Employee.findById(id);
-    if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
-    }
+    if (!employee) { return res.status(404).json({ message: 'Employee not found' }); }
 
     await Employee.delete(id);
     res.json({ message: 'Employee deleted successfully' });
