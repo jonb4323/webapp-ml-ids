@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "export-db": "node src/utils/exportDb.js",
     "test": "jest"
   },
   "keywords": [

@@ -1,5 +1,3 @@
-import date from 'date-fns';
-
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config');

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const pool = require('./db');
@@ -5,13 +6,8 @@ const pool = require('./db');
 async function exportDb() {
   try {
     const connection = await pool.getConnection();
-    
-    // Fetch Users
     const [users] = await connection.query('SELECT * FROM users');
-    
-    // Fetch Employees
     const [employees] = await connection.query('SELECT * FROM employees');
-    
     connection.release();
     
     const output = `
@@ -27,7 +23,7 @@ EMPLOYEES TABLE
 ${JSON.stringify(employees, null, 2)}
     `;
     
-    const outputPath = path.join(__dirname, '../../db_dump.txt');
+    const outputPath = path.join(__dirname, `../../wdatabase-dumps/db_dump.txt`);
     fs.writeFileSync(outputPath, output);
     
     console.log(`Database exported successfully to ${outputPath}`);
