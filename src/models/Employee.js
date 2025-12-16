@@ -41,8 +41,8 @@ class Employee {
     try {
       const connection = await pool.getConnection();
       const [result] = await connection.query(
-        'INSERT INTO employees (name, email, position, department, created_by) VALUES (?, ?, ?, ?, ?)',
-        [employee.name, employee.email, employee.position, employee.department, employee.created_by]
+        'INSERT INTO employees (name, email, position, department, salary, created_by) VALUES (?, ?, ?, ?, ?, ?)',
+        [employee.name, employee.email, employee.position, employee.department, employee.salary, employee.created_by]
       );
       connection.release();
       return result;
@@ -56,8 +56,8 @@ class Employee {
     try {
       const connection = await pool.getConnection();
       const [result] = await connection.query(
-        'UPDATE employees SET name = ?, email = ?, position = ?, department = ? WHERE id = ?',
-        [employee.name, employee.email, employee.position, employee.department, id]
+        'UPDATE employees SET name = ?, email = ?, position = ?, department = ?, salary = ? WHERE id = ?',
+        [employee.name, employee.email, employee.position, employee.department, employee.salary, id]
       );
       connection.release();
       return result;

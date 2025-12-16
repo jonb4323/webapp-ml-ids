@@ -122,12 +122,17 @@ function displayEmployees(employees) {
 
   employees.forEach(employee => {
     const row = document.createElement('tr');
+    const formattedSalary = parseFloat(employee.salary || 0).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
     row.innerHTML = `
       <td>${employee.id}</td>
       <td>${employee.name}</td>
       <td>${employee.email}</td>
       <td>${employee.position}</td>
       <td>${employee.department}</td>
+      <td>${formattedSalary}</td>
       <td>
         <button class="btn" onclick="editEmployee(${employee.id})">Edit</button>
         <button class="btn btn-secondary" onclick="deleteEmployee(${employee.id})">Delete</button>
@@ -144,6 +149,7 @@ async function createEmployee(event) {
   const email = document.getElementById('employee-email').value;
   const position = document.getElementById('employee-position').value;
   const department = document.getElementById('employee-department').value;
+  const salary = parseFloat(document.getElementById('employee-salary').value);
   const token = localStorage.getItem('token');
 
   try {
@@ -153,7 +159,7 @@ async function createEmployee(event) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ name, email, position, department })
+      body: JSON.stringify({ name, email, position, department, salary })
     });
 
     const data = await response.json();

@@ -36,7 +36,7 @@ exports.getEmployeeById = async (req, res) => {
 
 exports.createEmployee = async (req, res) => {
   try {
-    const { name, email, position, department } = req.body;
+    const { name, email, position, department, salary } = req.body;
     if (!name || !email || !position || !department) { return res.status(400).json({ message: 'All fields are required' }); }
 
     const result = await Employee.create({ 
@@ -44,6 +44,7 @@ exports.createEmployee = async (req, res) => {
       email, 
       position, 
       department,
+      salary: salary || 0,
       created_by: req.user.id 
     });
     res.status(201).json({ message: 'Employee created successfully', employeeId: result.insertId });
@@ -56,13 +57,13 @@ exports.createEmployee = async (req, res) => {
 exports.updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, position, department } = req.body;
+    const { name, email, position, department, salary } = req.body;
     if (!name || !email || !position || !department) { return res.status(400).json({ message: 'All fields are required' }); }
 
     const employee = await Employee.findById(id);
     if (!employee) { return res.status(404).json({ message: 'Employee not found' }); }
 
-    await Employee.update(id, { name, email, position, department });
+    await Employee.update(id, { name, email, position, department, salary: salary || 0 });
     res.json({ message: 'Employee updated successfully' });
   } catch (error) {
     console.error('Error updating employee:', error);

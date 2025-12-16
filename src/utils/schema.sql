@@ -11,9 +11,12 @@ CREATE TABLE IF NOT EXISTS employees (
     email VARCHAR(255) NOT NULL UNIQUE,
     position VARCHAR(255) NOT NULL,
     department VARCHAR(255) NOT NULL,
+    salary DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    created_by INT UNSIGNED,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Create the users table

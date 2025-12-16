@@ -27,6 +27,10 @@
           <label for="edit-employee-department">Department</label>
           <input type="text" id="edit-employee-department" name="department" required>
         </div>
+        <div class="form-group">
+          <label for="edit-employee-salary">Annual Salary</label>
+          <input type="number" id="edit-employee-salary" name="salary" step="0.01" min="0" required>
+        </div>
         <button type="submit" class="btn">Update Employee</button>
         <a href="/employee-list.html" class="btn btn-secondary">Cancel</a>
       </form>
@@ -56,6 +60,7 @@
         document.getElementById('edit-employee-email').value = employee.email;
         document.getElementById('edit-employee-position').value = employee.position;
         document.getElementById('edit-employee-department').value = employee.department;
+        document.getElementById('edit-employee-salary').value = employee.salary;
       } catch (error) {
         console.error('Error loading employee:', error);
         showAlert('Error loading employee', 'error');
@@ -69,6 +74,7 @@
       const email = document.getElementById('edit-employee-email').value;
       const position = document.getElementById('edit-employee-position').value;
       const department = document.getElementById('edit-employee-department').value;
+      const salary = parseFloat(document.getElementById('edit-employee-salary').value);
       const token = localStorage.getItem('token');
 
       try {
@@ -78,7 +84,7 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ name, email, position, department })
+          body: JSON.stringify({ name, email, position, department, salary })
         });
 
         const data = await response.json();
