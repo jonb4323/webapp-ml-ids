@@ -8,6 +8,7 @@ async function registerUser(event) {
   const adminKey = document.getElementById('register-admin-key').value;
 
   try {
+    logger.info('Registering user', { context: { email } });
     const response = await fetch('/auth/register', {
       method: 'POST',
       headers: {
@@ -19,10 +20,15 @@ async function registerUser(event) {
     const data = await response.json();
 
     if (response.ok) {
+      logger.info('Registration successful', { context: { email } });
       showAlert('Registration successful! Please login.', 'success');
       setTimeout(() => window.location.href = '/login.html', 2000);
-    } else { showAlert(data.message || 'Registration failed', 'error'); }
+    } else { 
+      logger.warn('Registration failed', { context: { data } });
+      showAlert(data.message || 'Registration failed', 'error'); 
+    }
   } catch (error) {
+    logger.error('Registration error', { context: { error } });
     console.error('Registration error:', error);
     showAlert('An error occurred during registration', 'error');
   }
@@ -36,6 +42,7 @@ async function loginAdmin(event) {
   const adminKey = document.getElementById('login-admin-key').value;
 
   try {
+    logger.info('Admin logging in', { context: { email } });
     const response = await fetch('/auth/admin-login', {
       method: 'POST',
       headers: {
@@ -47,14 +54,17 @@ async function loginAdmin(event) {
     const data = await response.json();
 
     if (response.ok) {
+      logger.info('Admin login successful', { context: { email } });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       showAlert('Admin login successful! Redirecting...', 'success');
       setTimeout(() => window.location.href = '/admin-page.html', 2000);
     } else {
+      logger.warn('Admin login failed', { context: { email } });
       showAlert(data.message || 'Login failed', 'error');
     }
   } catch (error) {
+    logger.error('Admin login error', { context: { error } });
     console.error('Login error:', error);
     showAlert('An error occurred during login', 'error');
   }
@@ -67,6 +77,7 @@ async function loginUser(event) {
   const password = document.getElementById('login-password').value;
 
   try {
+    logger.info('User logging in', { context: { email } });
     const response = await fetch('/auth/login', {
       method: 'POST',
       headers: {
@@ -78,14 +89,17 @@ async function loginUser(event) {
     const data = await response.json();
 
     if (response.ok) {
+      logger.info('User login successful', { context: { email } });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       showAlert('Login successful! redirecting to dashboard, please wait...', 'success');
       setTimeout(() => window.location.href = '/dashboard', 2000);
     } else {
+      logger.warn('User login failed', { context: { email } });
       showAlert(data.message || 'Login failed', 'error');
     }
   } catch (error) {
+    logger.error('User login error', { context: { error } });
     console.error('Login error:', error);
     showAlert('An error occurred during login', 'error');
   }
@@ -96,6 +110,7 @@ async function loadEmployees() {
   const token = localStorage.getItem('token');
 
   try {
+    logger.info('Loading employees', { context: { token } });
     const response = await fetch('/api/employees', {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -103,12 +118,14 @@ async function loadEmployees() {
     });
 
     if (!response.ok) {
+      logger.warn('Failed to fetch employees', { context: { token } });
       throw new Error('Failed to fetch employees');
     }
 
     const employees = await response.json();
     displayEmployees(employees);
   } catch (error) {
+    logger.error('Error loading employees', { context: { error } });
     console.error('Error loading employees:', error);
     showAlert('Error loading employees', 'error');
   }
@@ -121,6 +138,7 @@ function displayEmployees(employees) {
   tbody.innerHTML = '';
 
   employees.forEach(employee => {
+    logger.info('Displaying employee', { context: { employee } });
     const row = document.createElement('tr');
     const formattedSalary = parseFloat(employee.salary || 0).toLocaleString('en-US', {
       style: 'currency',
@@ -143,6 +161,7 @@ function displayEmployees(employees) {
 }
 
 async function createEmployee(event) {
+  logger.info('Creating employee', { context: { event } });
   event.preventDefault();
 
   const name = document.getElementById('employee-name').value;
@@ -165,13 +184,16 @@ async function createEmployee(event) {
     const data = await response.json();
 
     if (response.ok) {
+      logger.info('Employee created successfully', { context: { data } });
       showAlert('Employee created successfully!', 'success');
       document.getElementById('employee-form').reset();
       loadEmployees();
     } else {
+      logger.warn('Error creating employee', { context: { data } });
       showAlert(data.message || 'Error creating employee', 'error');
     }
   } catch (error) {
+    logger.error('Error creating employee', { context: { error } });
     console.error('Error creating employee:', error);
     showAlert('An error occurred', 'error');
   }
@@ -185,6 +207,7 @@ async function deleteEmployee(id) {
   const token = localStorage.getItem('token');
 
   try {
+    logger.info('Deleting employee', { context: { id } });
     const response = await fetch(`/api/employees/${id}`, {
       method: 'DELETE',
       headers: {
@@ -195,12 +218,15 @@ async function deleteEmployee(id) {
     const data = await response.json();
 
     if (response.ok) {
+      logger.info('Employee deleted successfully', { context: { data } });
       showAlert('Employee deleted successfully!', 'success');
       loadEmployees();
     } else {
+      logger.warn('Error deleting employee', { context: { data } });
       showAlert(data.message || 'Error deleting employee', 'error');
     }
   } catch (error) {
+    logger.error('Error deleting employee', { context: { error } });
     console.error('Error deleting employee:', error);
     showAlert('An error occurred', 'error');
   }
@@ -212,17 +238,20 @@ function editEmployee(id) {
 
 async function logout() {
   try {
+    logger.info('Logging out');
     await fetch('/auth/logout', { method: 'POST' });
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/login.html';
   } catch (error) {
+    logger.error('Logout error', { context: { error } });
     console.error('Logout error:', error);
   }
 }
 
 // Utility functions
 function showAlert(message, type) {
+  logger.info('Showing alert', { context: { message, type } });
   const alertDiv = document.createElement('div');
   alertDiv.className = `alert alert-${type}`;
   alertDiv.textContent = message;
@@ -238,21 +267,27 @@ async function loadUsers() {
   const token = localStorage.getItem('token');
 
   try {
+    logger.info('Loading users', { context: { token } });
     const response = await fetch('/api/admin/users', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
-    if (!response.ok) { throw new Error('Failed to fetch users'); }
+    if (!response.ok) { 
+      logger.warn('Failed to fetch users', { context: { token } });
+      throw new Error('Failed to fetch users'); 
+    }
 
     const users = await response.json();
     displayUsers(users);
   } catch (error) {
+    logger.error('Error loading users', { context: { error } });
     console.error('Error loading users:', error);
     showAlert('Error loading users', 'error');
   }
 }
 
 function displayUsers(users) {
+  logger.info('Displaying users', { context: { users } });
   const tbody = document.getElementById('users-tbody');
   if (!tbody) return;
 
@@ -284,6 +319,7 @@ async function toggleAdminRole(userId, isAdmin) {
   const newRole = isAdmin ? 'admin' : 'user';
 
   try {
+    logger.info('Toggling admin role', { context: { userId, newRole } });
     const response = await fetch(`/api/admin/users/${userId}/role`, {
       method: 'PUT',
       headers: {
@@ -294,14 +330,17 @@ async function toggleAdminRole(userId, isAdmin) {
     });
 
     if (response.ok) {
+      logger.info('Admin role updated', { context: { userId, newRole } });
       showAlert(`User role updated to ${newRole}`, 'success');
       loadUsers(); // Refresh list
     } else {
       const data = await response.json();
+      logger.warn('Error updating admin role', { context: { userId, newRole, data } });
       showAlert(data.message || 'Error updating role', 'error');
       loadUsers(); // Revert toggle on error
     }
   } catch (error) {
+    logger.error('Error updating role', { context: { error } });
     console.error('Error updating role:', error);
     showAlert('An error occurred', 'error');
     loadUsers(); // Revert toggle on error

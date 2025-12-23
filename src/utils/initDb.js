@@ -1,12 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const pool = require('./db');
+const logger = require('../../syscalls/index.js');
 
 async function initDb() {
   try {
     const connection = await pool.getConnection();
-    
-    console.log('Initializing database from schema.sql...');
+    logger.info('Initializing database from schema.sql...');
     
     // Read schema.sql file
     const schemaPath = path.join(__dirname, 'schema.sql');
@@ -23,12 +22,11 @@ async function initDb() {
       await connection.query(statement);
     }
     
-    console.log('Database initialized successfully');
-    
+    logger.info('Database initialized successfully');
     connection.release();
     process.exit(0);
   } catch (error) {
-    console.error('Database initialization failed:', error);
+    logger.error('Database initialization failed:', error);
     process.exit(1);
   }
 }
